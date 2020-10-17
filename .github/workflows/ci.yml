@@ -86,4 +86,28 @@ jobs:
           echo "copy demo.jar to /var/todolist"
           sudo cp ~/demo/demo.jar /var/todolist
           sudo chmod 777 /var/todolist/*
-          
+          cd /lib/systemd/system
+          if [ -e demo.service ];
+          then
+              echo "demo.service exists. stop it"
+              sudo systemctl stop demo;
+              echo "remove it";
+              sudo rm demo.service;
+          fi;
+          echo "write service"
+          sudo touch demo.service;
+          echo "[Unit]" | sudo tee -a demo.service;
+          echo "Description=demo" | sudo tee -a demo.service;
+          echo "After=syslog.target" | sudo tee -a demo.service;
+          echo "" | sudo tee -a demo.service;
+          echo "[Service]" | sudo tee -a demo.service;
+          echo "User=root" | sudo tee -a demo.service;
+          echo "ExecStart=/var/todolist/demo.jar" | sudo tee -a demo.service;
+          echo "SuccessExitStatus=143" | sudo tee -a demo.service;
+          echo "" | sudo tee -a demo.service;
+          echo "[Install]" | sudo tee -a demo.service;
+          echo "WantedBy=multi-user.target" | sudo tee -a demo.service;
+          echo "reload service";
+          sudo systemctl daemon-reload;
+          echo "start service";
+          sudo systemctl start demo;
