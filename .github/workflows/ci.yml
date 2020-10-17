@@ -70,7 +70,7 @@ jobs:
         proxy_key: ${{ secrets.PROXY_SSH_KEY }}
         source: "target/*.jar"
         target: "~/demo"
-        strip_components: 2
+        strip_components: 1
 
     - name: ssh after scp (run server)
       uses: appleboy/ssh-action@v0.1.3
