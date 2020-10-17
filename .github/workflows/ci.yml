@@ -7,6 +7,8 @@ name: CI
 on:
   push:
     branches: [ latest ]
+  pull_request:
+    branches: [ master ]
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -32,7 +34,6 @@ jobs:
 
     - name: build
       run: |
-        cd demo
         wd=`pwd`
         echo "we are at "$wd
         mvn -B clean package -Dproject.build.finalName=TodoList.Demo
