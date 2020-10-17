@@ -1,0 +1,113 @@
+# This is a basic workflow to help you get started with Actions
+
+name: CI
+
+# Controls when the action will run. Triggers the workflow on push or pull request
+# events but only for the master branch
+on:
+  push:
+    branches: [ latest ]
+  pull_request:
+    branches: [ latest ]
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+    - uses: actions/checkout@master
+
+    # Runs a single command using the runners shell
+    - name: Run a one-line script
+      run: |
+        wd=`pwd`
+        echo "we are at "$wd
+    - name: Check jdk
+      uses: actions/setup-java@v1.4.3
+      with:
+        java-version: 1.8
+
+    - name: build
+      run: |
+        wd=`pwd`
+        echo "we are at "$wd
+        mvn -B clean package -Dproject.build.finalName=TodoList.Demo
+
+    - name: test existance
+      run: |
+        wd=`pwd`
+        echo "we are at "$wd
+        ls target
+        cd target
+        ls
+
+    - name: ssh before scp
+      uses: appleboy/ssh-action@v0.1.3
+      with:
+        host: ${{ secrets.CI_HOST }}
+        port: ${{ secrets.CI_SSH_PORT }}
+        username: ${{ secrets.CI_USER }}
+        key: ${{ secrets.CI_SSH_KEY }}
+        script: |
+          mkdir -p ~/demo
+
+    - name: send file by scp
+      uses: appleboy/scp-action@master
+      with:
+        host: ${{ secrets.CI_HOST }}
+        username: ${{ secrets.CI_USER }}
+        port: ${{ secrets.CI_SSH_PORT }}
+        key: ${{ secrets.CI_SSH_KEY }}
+        proxy_host: ${{ secrets.PROXY_HOST }}
+        proxy_port: ${{ secrets.PROXY_SSH_PORT }}
+        proxy_username: ${{ secrets.PROXY_USER }}
+        proxy_password: ${{ secrets.PROXY_PASSWORD }}
+        proxy_key: ${{ secrets.PROXY_SSH_KEY }}
+        source: "demo/target/*.jar"
+        target: "~/demo"
+        strip_components: 2
+
+    - name: ssh after scp (run server)
+      uses: appleboy/ssh-action@v0.1.3
+      with:
+        host: ${{ secrets.CI_HOST }}
+        port: ${{ secrets.CI_SSH_PORT }}
+        username: ${{ secrets.CI_USER }}
+        key: ${{ secrets.CI_SSH_KEY }}
+        script: |
+          cd ~/demo
+          echo "make dir /var/todolist if exists"
+          sudo mkdir -p /var/todolist
+          echo "copy demo.jar to /var/todolist"
+          sudo cp ~/demo/demo.jar /var/todolist
+          sudo chmod 777 /var/todolist/*
+          cd /lib/systemd/system
+          if [ -e demo.service ];
+          then
+              echo "demo.service exists. stop it"
+              sudo systemctl stop demo;
+              echo "remove it";
+              sudo rm demo.service;
+          fi;
+          echo "write service"
+          sudo touch demo.service;
+          echo "[Unit]" | sudo tee -a demo.service;
+          echo "Description=demo" | sudo tee -a demo.service;
+          echo "After=syslog.target" | sudo tee -a demo.service;
+          echo "" | sudo tee -a demo.service;
+          echo "[Service]" | sudo tee -a demo.service;
+          echo "User=root" | sudo tee -a demo.service;
+          echo "ExecStart=/var/todolist/demo.jar" | sudo tee -a demo.service;
+          echo "SuccessExitStatus=143" | sudo tee -a demo.service;
+          echo "" | sudo tee -a demo.service;
+          echo "[Install]" | sudo tee -a demo.service;
+          echo "WantedBy=multi-user.target" | sudo tee -a demo.service;
+          echo "reload service";
+          sudo systemctl daemon-reload;
+          echo "start service";
+          sudo systemctl start demo;
