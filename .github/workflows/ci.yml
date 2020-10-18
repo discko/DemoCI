@@ -8,6 +8,9 @@ on:
   workflow_dispatch:
     branches: [ master ]
 
+env:
+  BUILT_DIR: $GITHUB_WORKSPACE
+  JAR_NAME: demo.jar
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -15,9 +18,7 @@ jobs:
   build:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
-    env:
-      BUILT_DIR: $GITHUB_WORKSPACE
-      JAR_NAME: demo.jar
+
     outputs:
       foundFile: ${{ steps.test_jar_exist.outputs.found }}
 
@@ -86,7 +87,7 @@ jobs:
     - name: restore jar
       uses: actions/cache@v2
       with:
-        path: path: ${{ jobs.build.env.BUILT_DIR }}/${{ jobs.build.env.JAR_NAME }}
+        path: path: ${{ env.BUILT_DIR }}/${{ env.JAR_NAME }}
         key: ${{ runner.os }}-jar-$GITHUB_SHA
 
     - name: ssh before scp
@@ -111,7 +112,7 @@ jobs:
         proxy_username: ${{ secrets.PROXY_USER }}
         proxy_password: ${{ secrets.PROXY_PASSWORD }}
         proxy_key: ${{ secrets.PROXY_SSH_KEY }}
-        source: ${{jobs.build.env.BUILT_DIR}}/${{jobs.build.env.JAR_NAME}}
+        source: ${{env.BUILT_DIR}}/${{env.JAR_NAME}}
         target: ${{env.SCP_TAR_DIR}}
         strip_components: ${{env.TAR_STRIP_PATH}}
 
@@ -124,7 +125,7 @@ jobs:
         key: ${{ secrets.CI_SSH_KEY }}
         script: |
           cd ${{env.SCP_TAR_DIR}}
-          JarFile=${{jobs.build.env.JAR_NAME}}
+          JarFile=${{env.JAR_NAME}}
           TarDir=${{env.RUNTIME_DIR}}
           echo "make dir $TarDir if exists"
           sudo mkdir -p $TarDir
