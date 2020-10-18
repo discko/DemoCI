@@ -51,7 +51,7 @@ jobs:
     needs: build
     env:
       JAR_NAME: demo.jar
-      SCP_SRC: ./target/${{ env.JAR_NAME }}
+      SCP_SRC_DIR: ./target
       TAR_STRIP_PATH: 1
       SCP_TAR_DIR: ~/demo
       RUNTIME_DIR: /var/todolist
@@ -81,7 +81,7 @@ jobs:
         proxy_username: ${{ secrets.PROXY_USER }}
         proxy_password: ${{ secrets.PROXY_PASSWORD }}
         proxy_key: ${{ secrets.PROXY_SSH_KEY }}
-        source: ${{env.SCP_SRC}}
+        source: ${{env.SCP_SRC}}/${{env.JAR_NAME}}
         target: ${{env.SCP_TAR_DIR}}
         strip_components: ${{env.TAR_STRIP_PATH}}
 
