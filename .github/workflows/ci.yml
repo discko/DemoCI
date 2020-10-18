@@ -9,7 +9,7 @@ on:
     branches: [ master ]
 
 env:
-  BUILT_DIR: $GITHUB_WORKSPACE
+  BUILT_DIR: ${{ github.workspace }}/target
   JAR_NAME: demo.jar
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
@@ -65,7 +65,7 @@ jobs:
       uses: actions/cache@v2
       with:
         path: ${{ env.BUILT_DIR }}/${{ env.JAR_NAME }}
-        key: ${{ runner.os }}-release-$GITHUB_SHA
+        key: ${{ runner.os }}-release-${{github.sha}}
 
     - name: post output
       run:
@@ -88,7 +88,7 @@ jobs:
       uses: actions/cache@v2
       with:
         path: ${{ env.BUILT_DIR }}/${{ env.JAR_NAME }}
-        key: ${{ runner.os }}-release-$GITHUB_SHA
+        key: ${{ runner.os }}-release-${{github.sha}}
 
     - name: ssh before scp
       uses: appleboy/ssh-action@v0.1.3
