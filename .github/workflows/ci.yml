@@ -87,7 +87,7 @@ jobs:
     - name: restore jar
       uses: actions/cache@v2
       with:
-        path: path: ${{ env.BUILT_DIR }}/${{ env.JAR_NAME }}
+        path: ${{ env.BUILT_DIR }}/${{ env.JAR_NAME }}
         key: ${{ runner.os }}-jar-$GITHUB_SHA
 
     - name: ssh before scp
