@@ -15,6 +15,9 @@ jobs:
   build:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
+    env:
+      BUILT_DIR: $GITHUB_WORKSPACE
+      JAR_NAME: demo.jar
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -40,11 +43,31 @@ jobs:
         mvn -B clean package
 
     - name: test existance
+      id: test_jar_exist
+      outputs:
+        foundFile: ${{ steps.test_jar_exist.outputs.found }}
       run: |
         wd=`pwd`
         echo "we are at "$wd
         cd target
         ls
+        if [ -e $JAR_NAME.jar ]; then
+          echo "::set-output name=found::true"
+        else
+          echo "::set-output name=found::false"
+          echo "::error file=demo.jar::file not found"
+          exit 1
+        fi
+
+    - name: cache jar
+      if: ${{ jobs.test_jar_exist.outputs.foundFile }} == 'true'
+      uses: action/cache@v2
+      with:
+        path: ${{ env.BUILT_DIR }}/${{ env.JAR_NAME }}
+        key: ${{ runner.os }}-jar-$GITHUB_SHA
+
+
+
 
   deploy:
     runs-on: ubuntu-latest
