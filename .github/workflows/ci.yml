@@ -60,7 +60,7 @@ jobs:
         fi
 
     - name: cache jar
-      if: ${{ steps.test_jar_exist.outputs.foundFile }} == 'true'
+#      if: ${{ steps.test_jar_exist.outputs.foundFile }} == 'true'
       uses: actions/cache@v2
       with:
         path: ${{ env.BUILT_DIR }}/${{ env.JAR_NAME }}
