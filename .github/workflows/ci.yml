@@ -51,11 +51,12 @@ jobs:
         echo "we are at "$wd
         cd target
         ls
-        if [ -e $JAR_NAME.jar ]; then
+        if [ -e $JAR_NAME ]; then
           echo "::set-output name=found::true"
         else
           echo "::set-output name=found::false"
           echo "::error file=demo.jar::file not found"
+          exit 1
         fi
 
     - name: cache jar
