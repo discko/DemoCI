@@ -18,6 +18,8 @@ jobs:
     env:
       BUILT_DIR: $GITHUB_WORKSPACE
       JAR_NAME: demo.jar
+    outputs:
+      foundFile: ${{ steps.test_jar_exist.outputs.found }}
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -44,8 +46,6 @@ jobs:
 
     - name: test existance
       id: test_jar_exist
-      outputs:
-        foundFile: ${{ steps.test_jar_exist.outputs.found }}
       run: |
         wd=`pwd`
         echo "we are at "$wd
@@ -60,7 +60,7 @@ jobs:
         fi
 
     - name: cache jar
-      if: ${{ jobs.test_jar_exist.outputs.foundFile }} == 'true'
+      if: ${{ jobs.build.outputs.foundFile }} == 'true'
       uses: action/cache@v2
       with:
         path: ${{ env.BUILT_DIR }}/${{ env.JAR_NAME }}
