@@ -61,7 +61,7 @@ jobs:
 
     - name: cache jar
       if: ${{ steps.test_jar_exist.outputs.foundFile }} == 'true'
-      uses: action/cache@v2
+      uses: actions/cache@v2
       with:
         path: ${{ env.BUILT_DIR }}/${{ env.JAR_NAME }}
         key: ${{ runner.os }}-jar-$GITHUB_SHA
