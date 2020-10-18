@@ -38,7 +38,6 @@
     </dependencies>
 
     <build>
-        <finalName>demo</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
@@ -48,6 +47,7 @@
                 </configuration>
             </plugin>
         </plugins>
+        <finalName>demo</finalName>
     </build>
 
 </project>
