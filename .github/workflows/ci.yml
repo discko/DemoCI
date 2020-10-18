@@ -6,6 +6,7 @@ name: Build And Deploy Demo
 # events but only for the master branch
 on:
   workflow_dispatch:
+    branches: [ master ]
 
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
@@ -59,15 +60,6 @@ jobs:
       with:
         path: ~/.m2/repository
         key: ${{ runner.os }}-maven-${{ hashFiles('./pom.xml') }}
-      run: echo "mvn cache miss"
-
-    - name: cache maven if need
-      if: steps.mvn.outputs.cache-hit == 'true'
-      uses: actions/cache@v2
-      with:
-        path: ~/.m2/repository
-        key: ${{ runner.os }}-maven-${{ hashFiles('./pom.xml') }}
-      run: echo "mvn cache hit!"
 
     - name: test existance
       run: |
