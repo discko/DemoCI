@@ -11,13 +11,27 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - uses: actions/checkout@master
 
-    - name: call my action
-      id: callMyAction
-      uses: discko/MavenAndDeploy@main
-      with:
-        java-version: 1.8
+      - name: call my action
+        id: callMyAction
+        uses: discko/MavenAndDeploy@main
+        with:
+          java-version: 1.8
+          host: ${{ secrets.CI_HOST }}
+          username: ${{ secrets.CI_USER }}
+          port: ${{ secrets.CI_SSH_PORT }}
+          key: ${{ secrets.CI_SSH_KEY }}
+          proxy_host: ${{ secrets.PROXY_HOST }}
+          proxy_port: ${{ secrets.PROXY_SSH_PORT }}
+          proxy_username: ${{ secrets.PROXY_USER }}
+          proxy_password: ${{ secrets.PROXY_PASSWORD }}
+          proxy_key: ${{ secrets.PROXY_SSH_KEY }}
+          source: "pom.xml"
+          target: "~"
+          strip_components: 0
 
-    - name: show output
-      run: |
-        echo "the output is "${{steps.callMyAction.outputs.result}}
+
+      - name: show output
+        run: |
+          echo "the output is "${{steps.callMyAction.outputs.result}}
