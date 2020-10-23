@@ -29,7 +29,7 @@ jobs:
           echo "set profile to dev"
       
       - name: check if master
-        if: endsWith( ${{github.ref}}, '/master')
+        if: ${{endsWith( github.ref, '/master') }}
         run: |
           echo "profile=product" >> $GITHUB_ENV
           echo "set profile to product"
