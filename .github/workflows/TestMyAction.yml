@@ -19,17 +19,17 @@ jobs:
       - name: call my action
         id: callMyAction
         run: |
-          echo "GitHub Ref="${GITHUB_REF}
+          echo "GitHub Ref="$GITHUB_REF
           echo "current profile:"$profile
       
       - name: check if dev
-        if: endsWith( ${github.ref} , "/dev" )
+        if: ${{ endsWith( $github.ref , "/dev" ) }}
         run: |
           echo "profile=dev" >> $GITHUB_ENV
           echo "set profile to dev"
       
       - name: check if master
-        if: endsWith( ${github.ref}, "/master")
+        if: endsWith( ${{github.ref}}, "/master")
         run: |
           echo "profile=product" >> $GITHUB_ENV
           echo "set profile to product"
